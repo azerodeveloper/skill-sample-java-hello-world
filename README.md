@@ -89,9 +89,31 @@ public class HelloWorldSkillServlet extends SkillServlet {
 
 增加不同类型的request hanlder可以参考如下 [request-handlers](https://developer.amazon.com/zh/docs/alexa-skills-kit-sdk-for-java/handle-requests.html#request-handlers)
 
-​                  
+2）设置忽略签名属性
 
-2）创建HelloWorldIntentHandler，处理配置的意图
+如使用http连接配置技能访问，那么需要设置忽略签名检查，否则会报错如下：
+
+```
+Missing signature/certificate for the provided skill request
+```
+
+需在Spring 工程启动的入口类进行设置：
+
+```java
+public class ServletInitializer extends SpringBootServletInitializer {
+ 
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+        System.setProperty(ServletConstants.TIMESTAMP_TOLERANCE_SYSTEM_PROPERTY, "3600000");
+        System.setProperty(ServletConstants.DISABLE_REQUEST_SIGNATURE_CHECK_SYSTEM_PROPERTY, "true");
+        return application.sources(HelloworldApplication.class);
+    }
+}
+```
+
+
+
+3）创建HelloWorldIntentHandler，处理配置的意图
 
 ```java
 public class HelloWorldIntentHandler implements IntentRequestHandler {
@@ -120,7 +142,7 @@ public class HelloWorldIntentHandler implements IntentRequestHandler {
 
 更多response的构建可以参考如下 [response-builder](https://developer.amazon.com/zh/docs/alexa-skills-kit-sdk-for-java/build-responses.html#response-builder)
 
-3）解析槽位
+4）解析槽位
 
 关于槽位的介绍，可参考[ `技能接入介绍`](https://azero.soundai.com/docs/document)>`自定义技能` > `任务型技能` > `创建交互模型`中内容进行了解，此处不做详述。
 
